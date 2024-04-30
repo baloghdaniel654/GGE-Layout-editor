@@ -154,19 +154,103 @@
       max-height: 450px;
       width: 300px;
     }
+
+    .preset-buildings #button {
+      margin-top: 10px;
+      margin-bottom: 0px;
+      background-color: #fff;
+      border: 2px solid #333;
+      border-radius: 5px;
+      color: #333;
+      font-size: 14px;
+      margin-bottom: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .preset-buildings #button:hover {
+      background-color: #333;
+      color: #fff;
+    }
+
+    .colorButton {
+      width: 30px;
+      height: 30px;
+      border: none;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    .colorButton:nth-child(1) {
+      background-color: rgb(255, 0, 0);
+    }
+
+    .colorButton:nth-child(2) {
+      background-color: rgb(0, 255, 0);
+    }
+
+    .colorButton:nth-child(3) {
+      background-color: rgb(0, 0, 255);
+    }
+
+    .colorButton:nth-child(4) {
+      background-color: rgb(255, 255, 0);
+    }
+
+    .colorButton.clicked {
+      border: 2px solid white;
+    }
+
+    #colorButtons {
+      margin-top: 3% !important;
+    }
+
+    .button-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .button-row button {
+      flex-grow: 0;
+      flex-basis: 50px;
+      margin-right: 10px;
+    }
+
+    .button-row p {
+      flex-grow: 1;
+      margin: 0;
+      flex-basis: calc(100% - 70px);
+      word-wrap: break-word;
+    }
   </style>
 </head>
 
-<body>
+<body onload="initializeBuildings()">
 
-  <div class="container-fluid asd">
+  <div class="container-fluid">
     <div class="row h-100">
       <div class="col-2 p-0">
         <div class="navbar">
           <div class="builder">
-            <h3>NEW BUILDING <button onclick="validateAndCreateBuilding()"><img src="./img/create.png" alt="create"
-                  title="Create building"></button><button onclick="takeScreenshot()"><img src="./img/screenshot.png"
-                  alt="screenshot" title="Screenshot"></button></h3>
+            <h3>NEW BUILDING</h3>
+            <div class="button-row">
+              <button onclick="validateAndCreateBuilding()"><img src="./img/create.png" alt="create"
+                  title="Create building"></button>
+              <p>Create building</p>
+              <button onclick="takeScreenshot()"><img src="./img/screenshot.png" alt="screenshot"
+                  title="Screenshot"></button>
+              <p>Screenshot</p>
+            </div>
+            <div class="button-row">
+              <button onclick="optimizeBuildings()"><img src="./img/optimize.png" alt="optimize"
+                  title="Optimize building"></button>
+              <p>Optimize buildings</p>
+              <button id="grid-expand-toggle"><img src="./img/expansion.png" alt="expansion" title="Expansion"></button>
+              <p>Expansion</p>
+            </div>
+
             <div class="slider-container">
               <label for="widthInput">WIDTH: <span id="widthValue">5</span></label>
               <input class="slider" type="range" id="widthInput" min="2" max="30" value="5" />
@@ -176,14 +260,26 @@
               <label for="heightInput">HEIGHT: <span id="heightValue">5</span></label>
               <input class="slider" type="range" id="heightInput" min="2" max="30" value="5" />
             </div>
+            <div class="preset-buildings">
+              <p>
+                <button id="button" onclick="setPresetSize(5, 5, '0, 0, 255', '5x5')">5x5</button>
+                <button id="button" onclick="setPresetSize(10, 5, '255, 255, 0', '10x5')">10x5</button>
+                <button id="button" onclick="setPresetSize(5, 10, '255, 0, 255', '5x10')">5x10</button>
+                <button id="button" onclick="setPresetSize(10, 10, '0, 255, 0', '10x10')">10x10</button>
+              </p>
+            </div>
             <label for="colorInput">COLOR (RGB):</label>
             <input class="form-control" type="text" id="colorInput" value="100 100 100" />
+            <div id="colorButtons">
+              <button class="colorButton" onclick="setColor(255, 0, 0)"></button>
+              <button class="colorButton" onclick="setColor(0, 255, 0)"></button>
+              <button class="colorButton" onclick="setColor(0, 0, 255)"></button>
+              <button class="colorButton" onclick="setColor(255, 255, 0)"></button>
+            </div>
+
             <label for="nameInput">NAME:</label>
             <input class="form-control" type="text" id="nameInput" maxlength="12" />
-            <button id="grid-expand-toggle">Castle expansion: OFF</button>
-            <button onclick="optimizeBuildings()">
-              Optimize Buildings
-            </button>
+
             <h3 class="mt-3">ALL BUILDINGS <button onclick="clearAllBuildings()"><img src="./img/clear.png" alt="clear"
                   title="Clear all buildings"></button></h3>
             <div id="buildingList"></div>
@@ -280,6 +376,7 @@
         alert('The values ​​must be greater than 2!');
       } else {
         createCustomBuilding();
+        optimizeBuildings();
       }
     }
 
@@ -344,12 +441,17 @@
     }
 
     function clearAllBuildings() {
-      const buildings = document.querySelectorAll('.building');
-      buildings.forEach(building => building.remove());
-      buildingData.forEach(data => data.infoElement.remove());
-      buildingData = [];
-      buildingCount = 0;
-    }
+    const buildings = document.querySelectorAll('.building');
+    buildings.forEach(building => building.remove());
+    buildingData.forEach(data => {
+        if (data.infoElement) {
+            data.infoElement.remove();
+        }
+    });
+    buildingData = [];
+    buildingCount = 0;
+}
+
 
     function checkIfInGrid(building) {
       const rect = container.getBoundingClientRect();
@@ -460,24 +562,62 @@
     const body = document.body;
     const isExpand = localStorage.getItem('gridExpand') === 'true';
 
-    if (isExpand) {
-      body.classList.add('gridExpand');
-      gridExpandToggle.innerHTML = "Castle expansion: ON";
-    } else {
-      gridExpandToggle.innerHTML = "Castle expansion: OFF";
-    }
-
-    gridExpandToggle.addEventListener('click', () => {
+    function toggleGridExpansion() {
       body.classList.toggle('gridExpand');
       const currentMode = body.classList.contains('gridExpand');
       localStorage.setItem('gridExpand', currentMode.toString());
 
       if (currentMode) {
-        gridExpandToggle.innerHTML = "Castle expansion: ON";
+        gridExpandToggle.classList.add('expanded');
       } else {
-        gridExpandToggle.innerHTML = "Castle expansion: OFF";
+        gridExpandToggle.classList.remove('expanded');
       }
-    });
+    }
+
+    gridExpandToggle.addEventListener('click', toggleGridExpansion);
+
+
+    if (isExpand) {
+      toggleGridExpansion();
+    }
+
+    function setPresetSize(width, height) {
+      document.getElementById('widthInput').value = width;
+      document.getElementById('heightInput').value = height;
+      updateSliderValue('widthInput');
+      updateSliderValue('heightInput');
+    }
+
+    function setColor(red, green, blue) {
+      document.getElementById('colorInput').value = `${red} ${green} ${blue}`;
+
+      const colorButtons = document.querySelectorAll('.colorButton');
+      colorButtons.forEach(button => button.classList.remove('clicked'));
+
+      event.target.classList.add('clicked');
+    }
+
+    function calculateEmptySpace(grid, startX, startY, width, height) {
+      let emptySpace = 0;
+      for (let y = startY - 1; y <= startY + height; y++) {
+        for (let x = startX - 1; x <= startX + width; x++) {
+          if (x < 0 || y < 0 || x >= grid[0].length || y >= grid.length || grid[y][x] === 0) {
+            emptySpace++;
+          }
+        }
+      }
+      return emptySpace;
+    }
+
+    function placeBuilding(grid, startX, startY, width, height) {
+      for (let y = startY; y < startY + height; y++) {
+        for (let x = startX; x < startX + width; x++) {
+          grid[y][x] = 1;
+        }
+      }
+    }
+
+
     function optimizeBuildings() {
       const sortedBuildings = buildingData.slice().sort((a, b) => {
         const areaA = a.width * a.height;
@@ -486,25 +626,102 @@
       });
 
       const rect = container.getBoundingClientRect();
-      let x = 0;
-      let y = 0;
-      let maxHeight = 0;
+      let gridWidth = 60;
+      const gridHeight = 60;
+
+      if (body.classList.contains('gridExpand')) {
+        gridWidth = 70;
+      }
+
+      const cellWidth = rect.width / gridWidth;
+      const cellHeight = rect.height / gridHeight;
+      const grid = Array.from({ length: gridHeight }, () => Array(gridWidth).fill(0));
 
       sortedBuildings.forEach(building => {
-        if (x + building.width > rect.width) {
-          x = 0;
-          y += maxHeight;
-          maxHeight = 0;
+        let bestPosition = null;
+        let maxScore = -Infinity;
+
+        for (let y = 0; y <= gridHeight - building.height / cellHeight; y++) {
+          for (let x = 0; x <= gridWidth - building.width / cellWidth; x++) {
+            let canPlace = true;
+            for (let dy = 0; dy < building.height / cellHeight; dy++) {
+              for (let dx = 0; dx < building.width / cellWidth; dx++) {
+                if (grid[y + dy][x + dx] !== 0) {
+                  canPlace = false;
+                  break;
+                }
+              }
+              if (!canPlace) break;
+            }
+            if (canPlace) {
+              const score = building.width * building.height;
+              if (score > maxScore) {
+                maxScore = score;
+                bestPosition = { x, y };
+              }
+            }
+          }
         }
 
-        building.element.style.left = x + 'px';
-        building.element.style.top = y + 'px';
-        x += building.width;
-
-        if (building.height > maxHeight) {
-          maxHeight = building.height;
+        if (bestPosition !== null) {
+          placeBuilding(grid, bestPosition.x, bestPosition.y, building.width / cellWidth, building.height / cellHeight);
+          for (let dy = 0; dy < building.height / cellHeight; dy++) {
+            for (let dx = 0; dx < building.width / cellWidth; dx++) {
+              grid[bestPosition.y + dy][bestPosition.x + dx] = 1;
+            }
+          }
+          building.element.style.left = bestPosition.x * cellWidth + 'px';
+          building.element.style.top = bestPosition.y * cellHeight + 'px';
+        } else {
+          console.log(`Failed to create building ${building.name}.`);
+          container.removeChild(building.element);
+          const index = buildingData.findIndex(item => item === building);
+          if (index !== -1) {
+            buildingData.splice(index, 1);
+          }
         }
       });
+    }
+
+
+    function initializeBuildings() {
+      const predefinedBuildings = [
+        { width: 12, height: 12, color: "100 100 100", name: "The Keep" },
+      ];
+
+      predefinedBuildings.forEach(building => {
+        createPredefinedBuilding(building);
+        optimizeBuildings();
+      });
+
+      organizeGrid();
+    }
+
+    function createPredefinedBuilding(building) {
+      const width = building.width * 14.4;
+      const height = building.height * 14.4;
+      const color = building.color.split(' ').join(',');
+      const name = building.name;
+
+      const newBuilding = document.createElement('div');
+      newBuilding.className = 'building predefined';
+      newBuilding.style.width = width + 'px';
+      newBuilding.style.height = height + 'px';
+      newBuilding.style.backgroundColor = `rgb(${color})`;
+      newBuilding.style.position = 'absolute';
+
+      const nameLayer = document.createElement('div');
+      nameLayer.style.pointerEvents = 'none';
+      nameLayer.innerHTML = `<div style="text-align: center;">${name}</div>`;
+      newBuilding.appendChild(nameLayer);
+
+      container.appendChild(newBuilding);
+
+      buildingData.push({ name: name, color: color, width: width, height: height, element: newBuilding, infoElement: null });
+
+      const buildingInfo = document.createElement('div');
+      buildingInfo.innerHTML = `${name} - ${width / 14.4}x${height / 14.4} - RGB:${color}`;
+      //buildingList.appendChild(buildingInfo);
     }
 
   </script>
