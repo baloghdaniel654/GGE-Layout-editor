@@ -486,10 +486,30 @@
       }
     }
 
+
+    // function removeBuilding(e) {
+    //   e.preventDefault();
+    //   if (e.target.classList.contains('building')) {
+    //     const removedBuilding = buildingData.find(data => data.element === e.target);
+    //     if (removedBuilding) {
+    //       removedBuilding.infoElement.remove();
+    //       const index = buildingData.indexOf(removedBuilding);
+    //       if (index > -1) {
+    //         buildingData.splice(index, 1);
+    //         buildingCount--;
+    //       }
+    //     }
+    //     e.target.remove();
+    //   }
+    // }
+
+
     function removeBuilding(e) {
       e.preventDefault();
-      if (e.target.classList.contains('building')) {
-        const removedBuilding = buildingData.find(data => data.element === e.target);
+      const targetBuilding = e.target.closest('.building');
+      const buildingName = targetBuilding.querySelector('div').textContent.trim();
+      if (targetBuilding && !targetBuilding.classList.contains('predefined')) {
+        const removedBuilding = buildingData.find(data => data.element === targetBuilding);
         if (removedBuilding) {
           removedBuilding.infoElement.remove();
           const index = buildingData.indexOf(removedBuilding);
@@ -498,7 +518,7 @@
             buildingCount--;
           }
         }
-        e.target.remove();
+        targetBuilding.remove();
       }
     }
 
@@ -685,51 +705,53 @@
 
 
     function optimizeBuildings() {
-      const sortedBuildings = buildingData.slice().sort((a, b) => {
-        const areaA = a.width * a.height;
-        const areaB = b.width * b.height;
-        return areaA - areaB;
-      });
+  const sortedBuildings = buildingData.slice().sort((a, b) => {
+    const areaA = a.width * a.height;
+    const areaB = b.width * b.height;
+    return areaB - areaA; // Sort from largest to smallest
+  });
 
-      const rect = container.getBoundingClientRect();
-      let gridWidth = 60;
-      const gridHeight = 60;
+  const rect = container.getBoundingClientRect();
+  let gridWidth = 60;
+  const gridHeight = 60;
 
-      if (body.classList.contains('gridExpand')) {
-        gridWidth = 70;
-      }
+  if (body.classList.contains('gridExpand')) {
+    gridWidth = 70;
+  }
 
-      const cellWidth = rect.width / gridWidth;
-      const cellHeight = rect.height / gridHeight;
-      const grid = Array.from({ length: gridHeight }, () => Array(gridWidth).fill(0));
+  const cellWidth = rect.width / gridWidth;
+  const cellHeight = rect.height / gridHeight;
+  const grid = Array.from({ length: gridHeight }, () => Array(gridWidth).fill(0));
 
-      sortedBuildings.forEach(building => {
-        let bestPosition = null;
-        let maxScore = -Infinity;
+  sortedBuildings.forEach(building => {
+    let bestPosition = null;
+    let maxScore = -Infinity;
 
-        for (let y = 0; y <= gridHeight - building.height / cellHeight; y++) {
-          for (let x = 0; x <= gridWidth - building.width / cellWidth; x++) {
-            let canPlace = true;
-            for (let dy = 0; dy < building.height / cellHeight; dy++) {
-              for (let dx = 0; dx < building.width / cellWidth; dx++) {
-                if (grid[y + dy][x + dx] !== 0) {
-                  canPlace = false;
-                  break;
-                }
-              }
-              if (!canPlace) break;
-            }
-            if (canPlace) {
-              const score = building.width * building.height;
-              if (score > maxScore) {
-                maxScore = score;
-                bestPosition = { x, y };
-              }
+    // Check if it's possible to place the building
+    for (let y = 0; y <= gridHeight - building.height / cellHeight; y++) {
+      for (let x = 0; x <= gridWidth - building.width / cellWidth; x++) {
+        let canPlace = true;
+        for (let dy = 0; dy < building.height / cellHeight; dy++) {
+          for (let dx = 0; dx < building.width / cellWidth; dx++) {
+            if (grid[y + dy][x + dx] !== 0) {
+              canPlace = false;
+              break;
             }
           }
+          if (!canPlace) break;
         }
+        if (canPlace) {
+          const score = building.width * building.height;
+          if (score > maxScore) {
+            maxScore = score;
+            bestPosition = { x, y };
+          }
+        }
+      }
+    }
 
-        if (bestPosition !== null) {
+    // If there's no space to place the building, remove it from both DOM and data
+    if (bestPosition !== null) {
           placeBuilding(grid, bestPosition.x, bestPosition.y, building.width / cellWidth, building.height / cellHeight);
           for (let dy = 0; dy < building.height / cellHeight; dy++) {
             for (let dx = 0; dx < building.width / cellWidth; dx++) {
@@ -740,14 +762,17 @@
           building.element.style.top = bestPosition.y * cellHeight + 'px';
         } else {
           console.log(`Failed to create building ${building.name}.`);
-          container.removeChild(building.element);
-          const index = buildingData.findIndex(item => item === building);
-          if (index !== -1) {
-            buildingData.splice(index, 1);
+        
+          const excessBuilding = buildingData.pop();
+          if (excessBuilding) {
+            container.removeChild(excessBuilding.element);
+            excessBuilding.infoElement.remove();
           }
         }
-      });
-    }
+  });
+}
+
+
 
 
     function initializeBuildings() {
@@ -759,8 +784,6 @@
         createPredefinedBuilding(building);
         optimizeBuildings();
       });
-
-      organizeGrid();
     }
 
     function createPredefinedBuilding(building) {
@@ -784,11 +807,8 @@
       container.appendChild(newBuilding);
 
       buildingData.push({ name: name, color: color, width: width, height: height, element: newBuilding, infoElement: null });
-
-      const buildingInfo = document.createElement('div');
-      buildingInfo.innerHTML = `${name} - ${width / 14.4}x${height / 14.4} - RGB:${color}`;
-      //buildingList.appendChild(buildingInfo);
     }
+
 
     const colorPicker = document.getElementById('color-picker');
     const colorInput = document.getElementById('colorInput');
