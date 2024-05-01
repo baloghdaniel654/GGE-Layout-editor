@@ -34,14 +34,15 @@
       max-width: 350px;
       min-width: 350px;
     }
+
     .navbar {
 
-  pointer-events: none;
-}
+      pointer-events: none;
+    }
 
-.navbar * {
-  pointer-events: auto;
-}
+    .navbar * {
+      pointer-events: auto;
+    }
 
     .builder {
       display: flex;
@@ -58,7 +59,7 @@
     .builder label {
       font-weight: bold;
       margin-top: 15px;
-      
+
     }
 
     .builder h3 {
@@ -267,6 +268,20 @@
     .form-control {
       margin-top: 10px;
     }
+
+    #presetSizes {
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+
+    #presetSizes option {
+      padding: 8px;
+      font-size: 16px;
+      background-color: #fff;
+    }
   </style>
 </head>
 
@@ -277,7 +292,7 @@
       <div class="col-2 p-0">
         <div class="navbar">
           <div class="builder">
-            <h3>NEW BUILDING</h3>
+            <h3>FUNCTIONS</h3>
             <div class="button-row">
               <button onclick="validateAndCreateBuilding()"><img src="./img/create.png" alt="create"
                   title="Create building"></button>
@@ -293,6 +308,23 @@
               <button id="grid-expand-toggle"><img src="./img/expansion.png" alt="expansion" title="Expansion"></button>
               <p>Expansion</p>
             </div>
+            <h3>BUILDING DETAILS</h3>
+            <div style="display: flex; align-items: center;">
+              <select id="presetSizes" onchange="setPresetSize()">
+                <option value="5x5">Default (5x5)</option>
+                <option value="10x5">Deco1 (10x5)</option>
+                <option value="3x3">Deco2 (3x3)</option>
+                <option value="10x10">District (10x10)</option>
+                <option value="8x10">Workshops (8x10)</option>
+                <option value="8x8">Estate (8x8)</option>
+                <option value="6x6">Barracks (6x6)</option>
+                <option value="6x9">Bakery (6x9)</option>
+              </select>
+              <button onclick="swapWidthAndHeight()"><img src="./img/rotate.png" alt="rotate"
+                
+                title="Rotate building"></button>
+                <p>Rotate building</p>
+            </div>
             <div class="slider-container">
               <label for="widthInput">WIDTH: <span id="widthValue">5</span></label>
               <input class="slider" type="range" id="widthInput" min="2" max="30" value="5" />
@@ -300,14 +332,6 @@
             <div class="slider-container">
               <label for="heightInput">HEIGHT: <span id="heightValue">5</span></label>
               <input class="slider" type="range" id="heightInput" min="2" max="30" value="5" />
-            </div>
-            <div class="preset-buildings">
-              <p>
-                <button id="button" onclick="setPresetSize(5, 5, '0, 0, 255', '5x5')">5x5</button>
-                <button id="button" onclick="setPresetSize(10, 5, '255, 255, 0', '10x5')">10x5</button>
-                <button id="button" onclick="setPresetSize(5, 10, '255, 0, 255', '5x10')">5x10</button>
-                <button id="button" onclick="setPresetSize(10, 10, '0, 255, 0', '10x10')">10x10</button>
-              </p>
             </div>
             <label for="colorInput">COLOR (RGB):
               <input id="color-picker" type="color">
@@ -665,14 +689,21 @@
       toggleGridExpansion();
     }
 
-    function setPresetSize(width, height) {
+    function setPresetSize() {
+      const presetSizes = document.getElementById('presetSizes');
+      const selectedSize = presetSizes.value;
+      const [width, height] = selectedSize.split('x').map(Number);
+
       document.getElementById('widthInput').value = width;
       document.getElementById('heightInput').value = height;
       document.getElementById('widthValue').textContent = width;
       document.getElementById('heightValue').textContent = height;
+
+      // Frissítsük a csúszkák értékeit is, ha szükséges
       updateSliderValue('widthInput');
       updateSliderValue('heightInput');
     }
+
 
     function setColor(red, green, blue) {
       document.getElementById('colorInput').value = `${red} ${green} ${blue}`;
@@ -705,53 +736,53 @@
 
 
     function optimizeBuildings() {
-  const sortedBuildings = buildingData.slice().sort((a, b) => {
-    const areaA = a.width * a.height;
-    const areaB = b.width * b.height;
-    return areaB - areaA; // Sort from largest to smallest
-  });
+      const sortedBuildings = buildingData.slice().sort((a, b) => {
+        const areaA = a.width * a.height;
+        const areaB = b.width * b.height;
+        return areaB - areaA; // Sort from largest to smallest
+      });
 
-  const rect = container.getBoundingClientRect();
-  let gridWidth = 60;
-  const gridHeight = 60;
+      const rect = container.getBoundingClientRect();
+      let gridWidth = 60;
+      const gridHeight = 60;
 
-  if (body.classList.contains('gridExpand')) {
-    gridWidth = 70;
-  }
+      if (body.classList.contains('gridExpand')) {
+        gridWidth = 70;
+      }
 
-  const cellWidth = rect.width / gridWidth;
-  const cellHeight = rect.height / gridHeight;
-  const grid = Array.from({ length: gridHeight }, () => Array(gridWidth).fill(0));
+      const cellWidth = rect.width / gridWidth;
+      const cellHeight = rect.height / gridHeight;
+      const grid = Array.from({ length: gridHeight }, () => Array(gridWidth).fill(0));
 
-  sortedBuildings.forEach(building => {
-    let bestPosition = null;
-    let maxScore = -Infinity;
+      sortedBuildings.forEach(building => {
+        let bestPosition = null;
+        let maxScore = -Infinity;
 
-    // Check if it's possible to place the building
-    for (let y = 0; y <= gridHeight - building.height / cellHeight; y++) {
-      for (let x = 0; x <= gridWidth - building.width / cellWidth; x++) {
-        let canPlace = true;
-        for (let dy = 0; dy < building.height / cellHeight; dy++) {
-          for (let dx = 0; dx < building.width / cellWidth; dx++) {
-            if (grid[y + dy][x + dx] !== 0) {
-              canPlace = false;
-              break;
+        // Check if it's possible to place the building
+        for (let y = 0; y <= gridHeight - building.height / cellHeight; y++) {
+          for (let x = 0; x <= gridWidth - building.width / cellWidth; x++) {
+            let canPlace = true;
+            for (let dy = 0; dy < building.height / cellHeight; dy++) {
+              for (let dx = 0; dx < building.width / cellWidth; dx++) {
+                if (grid[y + dy][x + dx] !== 0) {
+                  canPlace = false;
+                  break;
+                }
+              }
+              if (!canPlace) break;
+            }
+            if (canPlace) {
+              const score = building.width * building.height;
+              if (score > maxScore) {
+                maxScore = score;
+                bestPosition = { x, y };
+              }
             }
           }
-          if (!canPlace) break;
         }
-        if (canPlace) {
-          const score = building.width * building.height;
-          if (score > maxScore) {
-            maxScore = score;
-            bestPosition = { x, y };
-          }
-        }
-      }
-    }
 
-    // If there's no space to place the building, remove it from both DOM and data
-    if (bestPosition !== null) {
+        // If there's no space to place the building, remove it from both DOM and data
+        if (bestPosition !== null) {
           placeBuilding(grid, bestPosition.x, bestPosition.y, building.width / cellWidth, building.height / cellHeight);
           for (let dy = 0; dy < building.height / cellHeight; dy++) {
             for (let dx = 0; dx < building.width / cellWidth; dx++) {
@@ -762,15 +793,15 @@
           building.element.style.top = bestPosition.y * cellHeight + 'px';
         } else {
           console.log(`Failed to create building ${building.name}.`);
-        
+
           const excessBuilding = buildingData.pop();
           if (excessBuilding) {
             container.removeChild(excessBuilding.element);
             excessBuilding.infoElement.remove();
           }
         }
-  });
-}
+      });
+    }
 
 
 
@@ -828,6 +859,19 @@
 
       return [r, g, b];
     }
+    function swapWidthAndHeight() {
+    const widthInput = document.getElementById('widthInput');
+    const heightInput = document.getElementById('heightInput');
+    const widthValue = widthInput.value;
+    const heightValue = heightInput.value;
+
+    widthInput.value = heightValue;
+    heightInput.value = widthValue;
+
+    document.getElementById('widthValue').textContent = heightValue;
+    document.getElementById('heightValue').textContent = widthValue;
+}
+
   </script>
 
 </body>
