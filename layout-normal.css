@@ -2,7 +2,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+
     height: 100vh;
     background-color: #f2d9bb;
     color: #433120;
@@ -19,10 +19,6 @@ body {
     height: 100%;
     max-width: 350px;
     min-width: 350px;
-}
-
-.navbar {
-
     pointer-events: none;
 }
 
@@ -31,7 +27,7 @@ body {
 }
 
 .builder {
-    display: flex;
+
     flex-direction: column;
     align-items: flex-start;
     padding: 10px;
@@ -148,7 +144,7 @@ button {
 
 #buildingList {
     overflow-y: auto;
-    max-height: 450px;
+    max-height: 320px;
     width: 300px;
 }
 
@@ -253,6 +249,7 @@ button {
 
 .form-control {
     margin-top: 10px;
+    display: block;
 }
 
 #presetSizes {
@@ -271,7 +268,6 @@ button {
 
 .full-width-container {
     width: 100%;
-    display: flex;
 }
 
 .full-width-container select {
@@ -280,4 +276,32 @@ button {
 
 .full-width-container button {
     flex-grow: 0;
+}
+
+.offcanvas {
+    background-color: transparent !important;
+    border: none !important;
+}
+.btn {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+}
+
+.offcanvas {
+    top: 0 !important;
+    left:0 !important;
+}
+
+@media (max-width: 767px) {
+    .container {
+        width: 100%;
+        height: auto;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(14.4px, 1fr));
+    }
 }

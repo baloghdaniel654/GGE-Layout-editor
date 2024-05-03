@@ -511,3 +511,16 @@ function sendHelp() {
         "- Delete all buildings using the 'X' button, or remove individual buildings by right-clicking on them.";
     alert(helpText);
 }
+
+window.addEventListener('load', function() {
+    var offcanvas = new bootstrap.Offcanvas(document.getElementById('offcanvas'));
+    offcanvas.show();
+});
+
+//FIX REMOVE BUILDING - RIGHT CLICK
+document.addEventListener('DOMContentLoaded', function() {
+    container.addEventListener('contextmenu', function(event) {
+        event.preventDefault();
+        removeBuilding(event);
+    });
+});

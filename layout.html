@@ -2,101 +2,133 @@
 <html lang="en">
 
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@0.5.0-beta4/dist/html2canvas.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
-  <link rel="icon" type="image/webp" href="./img/favicon.ico">
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="layout-normal.css">
-  <title>Castle Layout Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@0.5.0-beta4/dist/html2canvas.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/webp" href="./img/favicon.ico">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="layout-normal.css">
+    <title>Castle Layout Editor</title>
 </head>
 
 <body onload="initializeBuildings()">
-
-  <div class="container-fluid">
-    <div class="row h-100">
-      <div class="col-2 p-0">
+    <div class="offcanvas offcanvas-start w-25" tabindex="-1" id="offcanvas" data-bs-keyboard="false"
+        data-bs-backdrop="false">
         <div class="navbar">
-          <div class="builder">
-            <h3 class="d-flex justify-content-between align-items-center full-width-container">
-              FUNCTIONS
-              <button onclick="sendHelp()">
-                <img src="./img/help.png" alt="clear" title="Send Help Text">
-              </button>
-            </h3>
-            <div class="button-row">
-              <button onclick="validateAndCreateBuilding()"><img src="./img/create.png" alt="create"
-                  title="Create building"></button>
-              <p>Create building</p>
-              <button onclick="takeScreenshot()"><img src="./img/screenshot.png" alt="screenshot"
-                  title="Screenshot"></button>
-              <p>Screenshot</p>
-            </div>
-            <div class="button-row">
-              <button onclick="optimizeBuildings()"><img src="./img/optimize.png" alt="optimize"
-                  title="Optimize building"></button>
-              <p>Optimize buildings</p>
-              <button id="grid-expand-toggle"><img src="./img/expansion.png" alt="expansion" title="Expansion"></button>
-              <p>Expansion</p>
-            </div>
-            <h3>BUILDING DETAILS</h3>
-            <div class="full-width-container">
-              <select id="presetSizes" onchange="setPresetSizeAndUpdateName()">
-                <option value="5x5">Default</option>
-                <option value="10x5">Decoration</option>
-                <option value="3x3">Small</option>
-                <option value="10x10">District</option>
-                <option value="8x10">Workshops</option>
-                <option value="8x8">Estate</option>
-                <option value="6x6">Barracks</option>
-                <option value="6x9">Bakery</option>
-              </select>
-              <button onclick="swapWidthAndHeight()">
-                <img src="./img/rotate.png" alt="rotate" title="Rotate building">
-              </button>
-            </div>
-            <div class="slider-container">
-              <label for="widthInput">WIDTH: <span id="widthValue">5</span></label>
-              <input class="slider" type="range" id="widthInput" min="2" max="30" value="5" />
-            </div>
-            <div class="slider-container">
-              <label for="heightInput">HEIGHT: <span id="heightValue">5</span></label>
-              <input class="slider" type="range" id="heightInput" min="2" max="30" value="5" />
-            </div>
-            <label for="colorInput">COLOR (RGB):
-              <input id="color-picker" type="color">
-            </label>
-            <input class="form-control" type="text" id="colorInput" value="100 100 100" />
+            <div class="builder">
 
+                <h3 class="d-flex justify-content-between align-items-center full-width-container">
+                    FUNCTIONS
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                    <button onclick="sendHelp()">
+                        <img src="./img/help.png" alt="clear" title="Help">
+                    </button>
+                </h3>
+                <div id="functions">
+                    <div class="button-row">
+                        <button onclick="validateAndCreateBuilding()"><img src="./img/create.png" alt="create"
+                                title="Create building"></button>
+                        <p>Create building</p>
+                        <button onclick="takeScreenshot()"><img src="./img/screenshot.png" alt="screenshot"
+                                title="Screenshot"></button>
+                        <p>Screenshot</p>
+                    </div>
+                    <div class="button-row">
+                        <button onclick="optimizeBuildings()"><img src="./img/optimize.png" alt="optimize"
+                                title="Optimize building"></button>
+                        <p>Optimize buildings</p>
+                        <button id="grid-expand-toggle"><img src="./img/expansion.png" alt="expansion"
+                                title="Expansion"></button>
+                        <p>Expansion</p>
+                    </div>
+                </div>
 
-            <label for="nameInput">NAME:</label>
-            <input class="form-control" type="text" id="nameInput" maxlength="12" />
+                <div id="building-details">
+                    <h3>
+                        BUILDING DETAILS
+                    </h3>
+                    <div class="full-width-container">
+                        <select id="presetSizes" onchange="setPresetSizeAndUpdateName()"
+                            style="left: 14.4px; top: 230.4px;">
+                            <option value="5x5">Default (5x5)</option>
+                            <option value="10x5">Decoration (10x5)</option>
+                            <option value="3x3">Small (3x3)</option>
+                            <option value="10x10">District (10x10)</option>
+                            <option value="8x10">Workshops (8x10)</option>
+                            <option value="8x8">Estate (8x8)</option>
+                            <option value="6x6">Barracks (6x6)</option>
+                            <option value="6x9">Bakery (6x9)</option>
+                        </select>
+                        <button onclick="swapWidthAndHeight()">
+                            <img src="./img/rotate.png" alt="rotate" title="Rotate building">
+                        </button>
+                    </div>
+                    <div class="slider-container">
+                        <label for="widthInput">WIDTH: <span id="widthValue">5</span></label>
+                        <input class="slider" type="range" id="widthInput" min="2" max="30" value="5" />
+                    </div>
+                    <div class="slider-container">
+                        <label for="heightInput">HEIGHT: <span id="heightValue">5</span></label>
+                        <input class="slider" type="range" id="heightInput" min="2" max="30" value="5" />
+                    </div>
+                    <div class="form-group">
+                        <label for="colorInput">COLOR (RGB):
+                            <input id="color-picker" type="color">
+                        </label>
+                        <input class="form-control" type="text" id="colorInput" value="100 100 100" />
+                    </div>
+                    <div class="form-group">
+                        <label for="nameInput">NAME:</label>
+                        <input class="form-control" type="text" id="nameInput" maxlength="12" value="Default (5x5)" />
+                    </div>
+                </div>
 
-
-            <h3 class="mt-3 d-flex justify-content-between align-items-center full-width-container">
-              ALL BUILDINGS
-              <button onclick="clearAllBuildings()">
-                <img src="./img/clear.png" alt="clear" title="Clear all buildings">
-              </button>
-            </h3>
-            <div id="buildingList"></div>
-          </div>
+                <h3 class="mt-3 d-flex justify-content-between align-items-center full-width-container">
+                    ALL BUILDINGS
+                    <button onclick="clearAllBuildings()">
+                        <img src="./img/clear.png" alt="clear" title="Clear all buildings">
+                    </button>
+                </h3>
+                <div id="all-buildings">
+                    <div id="buildingList"></div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="col-10 p-0 mt-4">
-        <div class="container" onmousemove="moveBuilding(event)" onmouseup="stopMovingBuilding()"
-          oncontextmenu="removeBuilding(event)">
-          <div class="grid" id="grid"></div>
-        </div>
-      </div>
+
     </div>
-  </div>
 
-  <script src="layout.js"></script>
+    <button class="btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvas" aria-label="Toggle sidebar">
+        <i class="bi bi-list fs-3"></i>
+    </button>
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-12" onmousemove="moveBuilding(event)" onmouseup="stopMovingBuilding()"
+                oncontextmenu="removeBuilding(event)">
+                <div class="grid" id="grid"></div>
+            </div>
+        </div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="layout.js"></script>
+    <!--
+    <script>
+        function checkScreenSize() {
+            if (window.innerWidth < 768) {
+                window.location.href = "layout-mobile.html";
+            }
+        }
+        checkScreenSize();
+    
+        window.addEventListener('resize', checkScreenSize);
+    </script>
+    -->
 </body>
 
 </html>
