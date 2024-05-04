@@ -21,15 +21,21 @@
         data-bs-backdrop="false">
         <div class="navbar">
             <div class="builder">
-
-                <h3 class="d-flex justify-content-between align-items-center full-width-container">
-                    FUNCTIONS
-                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                <div class="full-width-container mb-3">
+                    <button type="button" class="bi bi-list fs-3" data-bs-dismiss="offcanvas"
                         aria-label="Close"></button>
+                    <h3 class="ms-3 mt-1 d-flex justify-content-between align-items-center full-width-container">
+                        LAYOUT EDITOR
+                    </h3>
                     <button onclick="sendHelp()">
                         <img src="./img/help.png" alt="clear" title="Help">
                     </button>
-                </h3>
+                </div>
+
+                <h4 class="d-flex justify-content-between align-items-center full-width-container">
+                    FUNCTIONS
+                </h4>
+
                 <div id="functions">
                     <div class="button-row">
                         <button onclick="validateAndCreateBuilding()"><img src="./img/create.png" alt="create"
@@ -49,21 +55,20 @@
                     </div>
                 </div>
 
-                <div id="building-details">
-                    <h3>
+                <div class="mt-3" id="building-details">
+                    <h4>
                         BUILDING DETAILS
-                    </h3>
+                    </h4>
                     <div class="full-width-container">
-                        <select id="presetSizes" onchange="setPresetSizeAndUpdateName()"
-                            style="left: 14.4px; top: 230.4px;">
-                            <option value="5x5">Default (5x5)</option>
-                            <option value="10x5">Decoration (10x5)</option>
-                            <option value="3x3">Small (3x3)</option>
-                            <option value="10x10">District (10x10)</option>
-                            <option value="8x10">Workshops (8x10)</option>
-                            <option value="8x8">Estate (8x8)</option>
-                            <option value="6x6">Barracks (6x6)</option>
-                            <option value="6x9">Bakery (6x9)</option>
+                        <select id="presetSizes" onchange="setPresetSizeAndUpdateName()">
+                            <option value="5x5">Default</option>
+                            <option value="10x5">Decoration</option>
+                            <option value="3x3">Small</option>
+                            <option value="10x10">District</option>
+                            <option value="8x10">Workshops</option>
+                            <option value="8x8">Estate</option>
+                            <option value="6x6">Barracks</option>
+                            <option value="6x9">Bakery</option>
                         </select>
                         <button onclick="swapWidthAndHeight()">
                             <img src="./img/rotate.png" alt="rotate" title="Rotate building">
@@ -89,12 +94,12 @@
                     </div>
                 </div>
 
-                <h3 class="mt-3 d-flex justify-content-between align-items-center full-width-container">
+                <h4 class="mt-3 d-flex justify-content-between align-items-center full-width-container">
                     ALL BUILDINGS
                     <button onclick="clearAllBuildings()">
                         <img src="./img/clear.png" alt="clear" title="Clear all buildings">
                     </button>
-                </h3>
+                </h4>
                 <div id="all-buildings">
                     <div id="buildingList"></div>
                 </div>
@@ -117,8 +122,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="layout.js"></script>
-    <!--
-    <script>
+
+    <!-- <script>
         function checkScreenSize() {
             if (window.innerWidth < 768) {
                 window.location.href = "layout-mobile.html";
@@ -127,8 +132,8 @@
         checkScreenSize();
     
         window.addEventListener('resize', checkScreenSize);
-    </script>
-    -->
+    </script> -->
+
 </body>
 
 </html>

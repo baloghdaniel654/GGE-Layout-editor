@@ -50,6 +50,12 @@ body {
     color: #F3C24A;
 }
 
+.builder h4 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #F3C24A;
+}
+
 .slider-container {
     width: 100%;
     display: flex;
@@ -268,15 +274,16 @@ button {
 
 .full-width-container {
     width: 100%;
-}
+    display: flex;
+  }
 
-.full-width-container select {
+  .full-width-container select {
     flex-grow: 2;
-}
+  }
 
-.full-width-container button {
-    flex-grow: 0;
-}
+  .full-width-container button {
+    flex-grow: 0; 
+  }
 
 .offcanvas {
     background-color: transparent !important;
@@ -294,10 +301,22 @@ button {
     left:0 !important;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1200px) {
     .container {
-        width: 100%;
-        height: auto;
+        position: absolute;
+        width: calc(60 * 14.4px);
+        height: calc(60 * 14.4px);
+        border: 1px solid;
+        overflow: hidden;
+        display: inline-block;
+        background-color: #f2d9bb;
+        margin-left: 4%;
+        padding: 0;
+    }
+
+    .gridExpand .container {
+        width: calc(70* 14.4px);
+        margin-left: 4%;
     }
 
     .grid {
